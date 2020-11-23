@@ -256,11 +256,10 @@ APP.Main = (function() {
 
     var storyElements = document.querySelectorAll('.story');
 
-    // It does seem awfully broad to change all the
-    // colors every time!
-    for (var s = 0; s < storyElements.length; s++) {
+    var props = [];
 
-      var story = storyElements[s];
+    storyElements.forEach((story)=>{
+
       var score = story.querySelector('.story__score');
       var title = story.querySelector('.story__title');
 
@@ -271,17 +270,60 @@ APP.Main = (function() {
           document.body.getBoundingClientRect().top;
       var scale = Math.min(1, 1 - (0.05 * ((scoreLocation - 170) / height)));
       var opacity = Math.min(1, 1 - (0.5 * ((scoreLocation - 170) / height)));
-
-      score.style.width = (scale * 40) + 'px';
-      score.style.height = (scale * 40) + 'px';
-      score.style.lineHeight = (scale * 40) + 'px';
+      
+      var scoreStyleWidth = (scale * 40) + 'px';
+      var scoreStyleHeight = (scale * 40) + 'px';
+      var scoreStyleLineHeight = (scale * 40) + 'px';
 
       // Now figure out how wide it is and use that to saturate it.
       scoreLocation = score.getBoundingClientRect();
       var saturation = (100 * ((scoreLocation.width - 38) / 2));
 
-      score.style.backgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
-      title.style.opacity = opacity;
+      var scoreStyleBackgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
+      var titleStyleOpacity = opacity;
+
+      props.push({
+        score,
+        title,
+        scoreStyleWidth,
+        scoreStyleHeight,
+        scoreStyleLineHeight,
+        scoreStyleBackgroundColor,
+        titleStyleOpacity,
+      });
+
+    });
+
+    // It does seem awfully broad to change all the
+    // colors every time!
+    for (var s = 0; s < storyElements.length; s++) {
+      
+      var story = storyElements[s];
+      var score = props[s].score;
+      var title = props[s].title;
+      
+      /*
+      // Base the scale on the y position of the score.
+      var height = main.offsetHeight;
+      var mainPosition = main.getBoundingClientRect();
+      var scoreLocation = score.getBoundingClientRect().top -
+          document.body.getBoundingClientRect().top;
+      var scale = Math.min(1, 1 - (0.05 * ((scoreLocation - 170) / height)));
+      var opacity = Math.min(1, 1 - (0.5 * ((scoreLocation - 170) / height)));
+      */
+      
+      score.style.width = props[s].scoreStyleWidth;
+      score.style.height = props[s].scoreStyleHeight;
+      score.style.lineHeight = props[s].scoreStyleLineHeight;
+      
+      /*
+      // Now figure out how wide it is and use that to saturate it.
+      scoreLocation = score.getBoundingClientRect();
+      var saturation = (100 * ((scoreLocation.width - 38) / 2));
+      */
+
+      score.style.backgroundColor = props[s].scoreStyleBackgroundColor;
+      title.style.opacity = props[s].titleStyleOpacity;
     }
   }
 
